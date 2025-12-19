@@ -6,23 +6,16 @@
   <title>給妳的歌</title>
   <style>
     :root{
-      --bg1:#fff7fb;
-      --bg2:#f2fbff;
-      --card:#ffffffcc;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --accent:#ff5fa2;
-      --accent2:#6aa7ff;
-      --shadow: 0 18px 50px rgba(0,0,0,.12);
-      --radius: 22px;
+      --bg1:#fff7fb; --bg2:#f2fbff;
+      --card:rgba(255,255,255,.78);
+      --text:#111827; --muted:#6b7280;
+      --accent:#ff5fa2; --accent2:#6aa7ff;
+      --shadow:0 18px 50px rgba(0,0,0,.12);
+      --radius:22px;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
       padding:24px;
       font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", sans-serif;
       color:var(--text);
@@ -31,12 +24,12 @@
         radial-gradient(1200px 700px at 85% 20%, var(--bg2), transparent 60%),
         linear-gradient(180deg, #fff, #f7fafc);
     }
-    .wrap{width:min(560px, 100%)}
+    .wrap{width:min(620px, 100%)}
     .card{
       position:relative;
       background:var(--card);
       backdrop-filter: blur(10px);
-      border:1px solid rgba(255,255,255,.6);
+      border:1px solid rgba(255,255,255,.7);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       padding:22px;
@@ -44,68 +37,49 @@
     }
     .card:before{
       content:"";
-      position:absolute; inset:-60px -40px auto auto;
-      width:220px; height:220px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,95,162,.35), transparent 60%),
-                  radial-gradient(circle at 70% 70%, rgba(106,167,255,.30), transparent 60%);
+      position:absolute; inset:-70px -50px auto auto;
+      width:240px; height:240px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,95,162,.38), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(106,167,255,.32), transparent 60%);
       transform: rotate(18deg);
-      filter: blur(0px);
       pointer-events:none;
     }
-    .top{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:14px;
-    }
-    h1{
-      margin:0;
-      font-size:22px;
-      letter-spacing:.5px;
-    }
+    .top{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px;}
+    h1{margin:0; font-size:22px; letter-spacing:.5px;}
     .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:12.5px;
-      color:#111827;
-      background: rgba(255,255,255,.75);
-      border:1px solid rgba(17,24,39,.08);
-      white-space:nowrap;
+      display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px;
+      font-size:12.5px; background: rgba(255,255,255,.8);
+      border:1px solid rgba(17,24,39,.10); white-space:nowrap;
     }
-    .dot{
-      width:9px; height:9px; border-radius:999px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      box-shadow: 0 0 0 4px rgba(255,95,162,.12);
-    }
-    .msg{
-      margin:10px 0 14px;
-      font-size:15.5px;
+    .dot{width:9px;height:9px;border-radius:999px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 0 4px rgba(255,95,162,.12);}
+    .lead{
+      margin:10px 0 12px;
       color:var(--muted);
+      font-size:15.5px;
       line-height:1.7;
+      min-height: 48px;
     }
 
-    .panel{
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+    /* 跳字動畫 */
+    .popline{display:inline-block; white-space:pre-wrap}
+    .ch{
+      display:inline-block;
+      transform: translateY(10px) scale(.98);
+      opacity:0;
+      filter: blur(1px);
+      animation: pop .55s ease forwards;
     }
-    .controls{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+    @keyframes pop{
+      to{transform: translateY(0) scale(1); opacity:1; filter: blur(0)}
     }
+
+    .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
     button{
-      flex:1 1 180px;
+      flex:1 1 170px;
       padding:13px 14px;
-      border:0;
-      border-radius:16px;
+      border:0; border-radius:16px;
       cursor:pointer;
-      font-size:15px;
-      font-weight:650;
+      font-size:15px; font-weight:700;
       color:white;
       background: linear-gradient(135deg, var(--accent), #ff7cc1 45%, #ffb4d8);
       box-shadow: 0 10px 25px rgba(255,95,162,.28);
@@ -115,23 +89,16 @@
     button:active{transform: translateY(1px)}
     .ghost{
       flex:0 0 auto;
-      padding:13px 14px;
-      border-radius:16px;
-      background: rgba(255,255,255,.7);
+      background: rgba(255,255,255,.85);
       color:#111827;
-      border:1px solid rgba(17,24,39,.10);
+      border:1px solid rgba(17,24,39,.12);
       box-shadow:none;
-      font-weight:650;
+      font-weight:700;
     }
-    .hint{
-      font-size:13px;
-      color:var(--muted);
-      text-align:center;
-      padding-top:6px;
-    }
+    .hint{font-size:13px;color:var(--muted);text-align:center;margin-top:10px}
     .err{
       display:none;
-      margin-top:4px;
+      margin-top:10px;
       padding:10px 12px;
       border-radius:14px;
       background: rgba(255,95,162,.10);
@@ -139,26 +106,91 @@
       color:#b42318;
       font-size:13px;
     }
-    audio{
+    audio{width:100%; margin-top:10px; border-radius:14px;}
+
+    /* 字幕區 */
+    .capWrap{
+      margin-top:14px;
+      padding:14px;
+      border-radius:18px;
+      background: rgba(255,255,255,.72);
+      border:1px solid rgba(17,24,39,.08);
+    }
+    .capTitle{
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:13px; color:var(--muted);
+      margin-bottom:10px;
+    }
+    .caps{
+      font-size:16px;
+      line-height:1.8;
+      min-height: 70px;
+      color:#111827;
+      letter-spacing:.2px;
+    }
+    .capLine{
+      opacity:.45;
+      transition: opacity .15s ease, transform .15s ease;
+      transform: translateY(0);
+    }
+    .capLine.active{
+      opacity:1;
+      transform: translateY(-1px);
+    }
+    .tiny{margin-top:10px;text-align:center;color:#9ca3af;font-size:12px}
+
+    /* 編輯面板（彈窗） */
+    dialog{
+      width:min(780px, 96vw);
+      border:0;
+      border-radius:18px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.25);
+      padding:0;
+      overflow:hidden;
+    }
+    dialog::backdrop{background: rgba(0,0,0,.35)}
+    .modal{
+      background: #fff;
+      padding:18px;
+    }
+    .modalTop{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:12px;
+    }
+    .modal h2{margin:0; font-size:16px}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 860px){
+      .grid{grid-template-columns: 1fr 1fr;}
+    }
+    textarea{
       width:100%;
-      margin-top:2px;
+      min-height: 260px;
+      resize: vertical;
+      padding:12px;
       border-radius:14px;
+      border:1px solid rgba(17,24,39,.14);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12.5px;
+      line-height:1.5;
     }
-    .tiny{
-      margin-top:10px;
-      text-align:center;
-      color:#9ca3af;
-      font-size:12px;
-    }
+    .rowBtns{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+    .rowBtns button{flex: 1 1 170px;}
+    .warn{font-size:12px;color:#6b7280;margin-top:8px;line-height:1.5}
+    code{background:rgba(17,24,39,.06); padding:2px 6px; border-radius:8px}
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="card">
       <div class="top">
         <div>
-          <h1>給妳的歌</h1>
-          <div class="msg" id="msg">準備中…</div>
+          <h1 id="title">給妳的歌</h1>
+          <div class="lead" id="lead"></div>
         </div>
         <div class="badge" title="會依時間切換">
           <span class="dot"></span>
@@ -166,94 +198,328 @@
         </div>
       </div>
 
-      <div class="panel">
-        <div class="controls">
-          <button id="playBtn">播放</button>
-          <button class="ghost" id="reloadBtn" title="重新判斷時間並換歌">重新載入</button>
-        </div>
-
-        <div class="err" id="err"></div>
-        <audio id="player" controls preload="auto"></audio>
-
-        <div class="hint">不同時間掃描，會聽到不一樣的我。</div>
-        <div class="tiny">如果手機沒自動播放，點一下「播放」就可以。</div>
+      <div class="controls">
+        <button id="playBtn">播放</button>
+        <button class="ghost" id="reBtn" title="重新判斷時間並換歌">重新載入</button>
+        <button class="ghost" id="editBtn" title="自訂字與字幕">自訂內容</button>
       </div>
+
+      <div class="err" id="err"></div>
+
+      <audio id="player" controls preload="auto"></audio>
+
+      <div class="capWrap">
+        <div class="capTitle">
+          <span>字幕</span>
+          <span id="timeTag">00:00</span>
+        </div>
+        <div class="caps" id="caps"></div>
+      </div>
+
+      <div class="hint">不同時間掃描，會聽到不一樣的我。</div>
+      <div class="tiny">提示：手機通常需要你點一次「播放」才能出聲（瀏覽器限制）。</div>
     </div>
   </div>
 
-  <script>
-    function pickByTime(){
-      const now = new Date();
-      const hour = now.getHours();
+  <!-- 編輯面板 -->
+  <dialog id="dlg">
+    <div class="modal">
+      <div class="modalTop">
+        <h2>自訂字 & 字幕（存在此裝置瀏覽器）</h2>
+        <button class="ghost" id="closeDlg">關閉</button>
+      </div>
 
-      let slot = "";
-      let song = "";
-      let message = "";
+      <div class="grid">
+        <div>
+          <div style="font-size:13px;color:#6b7280;margin:0 0 8px;">自訂設定（JSON）</div>
+          <textarea id="cfgBox"></textarea>
+          <div class="warn">
+            你可以改：<code>title</code>、每個時段的 <code>message</code>、<code>song</code>，以及 <code>captions</code>。<br>
+            <code>captions</code> 是陣列：每行包含 <code>t</code>（秒）和 <code>text</code>（字幕文字）。
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;color:#6b7280;margin:0 0 8px;">快速說明</div>
+          <textarea readonly>
+範例（只示意）：
+{
+  "day": {
+    "message": "上班很辛苦…有我陪你。",
+    "song": "audio/day_song.mp3",
+    "captions": [
+      {"t": 0, "text": "上班很辛苦"},
+      {"t": 4, "text": "能撐就撐"},
+      {"t": 9, "text": "無聊就吃吃喝喝"},
+      {"t": 14, "text": "有我陪你"}
+    ]
+  }
+}
 
-      if (hour >= 6 && hour < 11) {
-        slot = "早上";
-        song = "audio/day_song.mp3";
-        message = "今天慢慢來。";
-      } else if (hour >= 11 && hour < 18) {
-        slot = "白天";
-        song = "audio/day_song.mp3";
-        message = "上班很辛苦，能上就上；無聊就吃吃喝喝。有我陪你。";
-      } else if (hour >= 18 && hour < 23) {
-        slot = "晚上";
-        song = "audio/day_song.mp3";
-        message = "辛苦了，今天就到這裡。";
-      } else {
-        slot = "深夜";
-        song = "audio/day_song.mp3";
-        message = "如果你還醒著，我在。";
-      }
+注意：
+- t 用「秒」，可用小數（例如 12.5）
+- 字幕不必很密，4~12 行就很有感
+- 改完按「套用並保存」
+          </textarea>
+        </div>
+      </div>
 
-      return {slot, song, message};
+      <div class="rowBtns">
+        <button id="saveCfg">套用並保存</button>
+        <button class="ghost" id="resetCfg">恢復預設</button>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+/** ========= 1) 預設設定（你可在彈窗改） ========= */
+const DEFAULT_CFG = {
+  title: "給妳的歌",
+  slots: {
+    morning: {
+      label: "早上",
+      message: "今天慢慢來。",
+      song: "audio/morning_song.mp3",
+      captions: [
+        { t: 0,  text: "早上的風 有一點涼" },
+        { t: 6,  text: "不用太快 也不用趕" },
+        { t: 12, text: "今天的路 慢慢走完" },
+        { t: 18, text: "如果妳笑 那就很好" },
+        { t: 24, text: "我在這裡 陪妳走走" }
+      ]
+    },
+    day: {
+      label: "白天",
+      message: "上班很辛苦，能上就上；無聊就吃吃喝喝。有我陪你。",
+      song: "audio/day_song.mp3",
+      captions: [
+        { t: 0,  text: "上班很辛苦" },
+        { t: 4,  text: "能撐就撐" },
+        { t: 9,  text: "不想撐的時候 也沒關係" },
+        { t: 14, text: "無聊的話 吃吃喝喝" },
+        { t: 19, text: "不用想太多 也不用急" },
+        { t: 24, text: "有我陪你 慢慢過去" }
+      ]
+    },
+    evening: {
+      label: "晚上",
+      message: "辛苦了，今天就到這裡。",
+      song: "audio/evening_song.mp3",
+      captions: [
+        { t: 0,  text: "燈一盞一盞 亮起來" },
+        { t: 7,  text: "一天的聲音 慢慢離開" },
+        { t: 14, text: "妳今天 真的很棒" },
+        { t: 20, text: "不用趕路 不用想" },
+        { t: 26, text: "今晚的世界 剛剛好" }
+      ]
+    },
+    night: {
+      label: "深夜",
+      message: "如果你還醒著，我在。",
+      song: "audio/day_song.mp3",
+      captions: [
+        { t: 0,  text: "如果妳 還醒著" },
+        { t: 5,  text: "那也沒關係" },
+        { t: 10, text: "夜很長 但不孤單" },
+        { t: 16, text: "我在這裡 陪妳一下" },
+        { t: 22, text: "不用說 不用想" },
+        { t: 28, text: "就這樣 聽一會" }
+      ]
     }
+  }
+};
 
-    const player = document.getElementById("player");
-    const playBtn = document.getElementById("playBtn");
-    const reloadBtn = document.getElementById("reloadBtn");
-    const msgEl = document.getElementById("msg");
-    const slotEl = document.getElementById("slot");
-    const errEl = document.getElementById("err");
+/** ========= 2) localStorage 讀寫 ========= */
+const LS_KEY = "forher_cfg_v1";
+function loadCfg(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return structuredClone(DEFAULT_CFG);
+    const parsed = JSON.parse(raw);
+    return { ...structuredClone(DEFAULT_CFG), ...parsed };
+  }catch{
+    return structuredClone(DEFAULT_CFG);
+  }
+}
+function saveCfg(cfg){
+  localStorage.setItem(LS_KEY, JSON.stringify(cfg, null, 2));
+}
 
-    function setError(text){
-      if (!text){
-        errEl.style.display = "none";
-        errEl.textContent = "";
-        return;
-      }
-      errEl.style.display = "block";
-      errEl.textContent = text;
-    }
+/** ========= 3) 時段選擇 ========= */
+function pickSlot(){
+  const h = new Date().getHours();
+  if (h >= 6 && h < 11) return "morning";
+  if (h >= 11 && h < 18) return "day";
+  if (h >= 18 && h < 23) return "evening";
+  return "night";
+}
 
-    function apply(){
-      const {slot, song, message} = pickByTime();
-      slotEl.textContent = slot;
-      msgEl.textContent = message;
-      player.src = song;
+/** ========= 4) 跳字動畫（可重播） ========= */
+function animateText(el, text){
+  el.innerHTML = "";
+  const span = document.createElement("span");
+  span.className = "popline";
+  const chars = Array.from(text);
+  chars.forEach((c, i) => {
+    const s = document.createElement("span");
+    s.className = "ch";
+    s.style.animationDelay = (i * 0.03) + "s";
+    s.textContent = c;
+    span.appendChild(s);
+  });
+  el.appendChild(span);
+}
 
-      playBtn.textContent = "播放";
-      setError("");
-    }
+/** ========= 5) 字幕渲染（依 currentTime） ========= */
+function fmtTime(sec){
+  sec = Math.max(0, Math.floor(sec));
+  const m = String(Math.floor(sec/60)).padStart(2,"0");
+  const s = String(sec%60).padStart(2,"0");
+  return `${m}:${s}`;
+}
 
-    // 初次載入
+function renderCaptions(container, captions){
+  container.innerHTML = "";
+  captions.forEach((c, idx) => {
+    const div = document.createElement("div");
+    div.className = "capLine";
+    div.dataset.idx = String(idx);
+    div.dataset.t = String(c.t);
+    div.textContent = c.text;
+    container.appendChild(div);
+  });
+}
+
+function updateActiveCaption(container, captions, t){
+  // 找最後一個 t <= currentTime 的字幕
+  let active = -1;
+  for(let i=0;i<captions.length;i++){
+    if(t >= captions[i].t) active = i;
+    else break;
+  }
+  // 更新 class
+  const nodes = container.querySelectorAll(".capLine");
+  nodes.forEach((n, i) => {
+    n.classList.toggle("active", i === active);
+    // 小優化：只顯示附近幾行更像「歌詞字幕」
+    if(active === -1) n.style.display = (i < 4 ? "" : "none");
+    else n.style.display = (Math.abs(i - active) <= 2 ? "" : "none");
+  });
+}
+
+/** ========= 6) 主流程 ========= */
+const titleEl = document.getElementById("title");
+const leadEl  = document.getElementById("lead");
+const slotEl  = document.getElementById("slot");
+const errEl   = document.getElementById("err");
+const player  = document.getElementById("player");
+const playBtn = document.getElementById("playBtn");
+const reBtn   = document.getElementById("reBtn");
+const editBtn = document.getElementById("editBtn");
+const capsEl  = document.getElementById("caps");
+const timeTag = document.getElementById("timeTag");
+
+let CFG = loadCfg();
+let currentKey = pickSlot();
+let currentSlot = null;
+
+function setError(msg){
+  if(!msg){
+    errEl.style.display="none";
+    errEl.textContent="";
+  }else{
+    errEl.style.display="block";
+    errEl.textContent=msg;
+  }
+}
+
+function apply(){
+  CFG = loadCfg();
+  currentKey = pickSlot();
+  currentSlot = CFG.slots[currentKey];
+
+  titleEl.textContent = CFG.title || "給妳的歌";
+  slotEl.textContent = currentSlot?.label || "載入中";
+
+  // 跳字動畫（你要的互動感）
+  animateText(leadEl, currentSlot?.message || "…");
+
+  // 設定音樂
+  player.pause();
+  player.currentTime = 0;
+  player.src = currentSlot?.song || "";
+  playBtn.textContent = "播放";
+
+  // 字幕
+  const captions = currentSlot?.captions || [];
+  renderCaptions(capsEl, captions);
+  updateActiveCaption(capsEl, captions, 0);
+  timeTag.textContent = "00:00";
+
+  setError("");
+}
+
+apply();
+
+/** 播放 */
+playBtn.addEventListener("click", async () => {
+  try{
+    setError("");
+    // 若檔案不存在，播放會失敗
+    await player.play();
+    playBtn.textContent = "播放中";
+  }catch(e){
+    setError("播放失敗：請確認音檔存在於 repo，且路徑/檔名完全一致（包含大小寫）。例如：audio/day_song.mp3");
+  }
+});
+
+/** 重新載入（也會重新跑跳字動畫） */
+reBtn.addEventListener("click", () => apply());
+
+/** 字幕跟著時間跑 */
+player.addEventListener("timeupdate", () => {
+  const captions = currentSlot?.captions || [];
+  const t = player.currentTime || 0;
+  timeTag.textContent = fmtTime(t);
+  if(captions.length) updateActiveCaption(capsEl, captions, t);
+});
+
+/** ========= 7) 編輯面板 ========= */
+const dlg = document.getElementById("dlg");
+const cfgBox = document.getElementById("cfgBox");
+const closeDlg = document.getElementById("closeDlg");
+const saveCfgBtn = document.getElementById("saveCfg");
+const resetCfgBtn = document.getElementById("resetCfg");
+
+function openEditor(){
+  const live = loadCfg();
+  cfgBox.value = JSON.stringify(live, null, 2);
+  dlg.showModal();
+}
+function closeEditor(){
+  dlg.close();
+}
+
+editBtn.addEventListener("click", openEditor);
+closeDlg.addEventListener("click", closeEditor);
+
+saveCfgBtn.addEventListener("click", () => {
+  try{
+    const parsed = JSON.parse(cfgBox.value);
+    // 最基本驗證
+    if(!parsed || typeof parsed !== "object") throw new Error("bad json");
+    saveCfg(parsed);
+    closeEditor();
     apply();
+  }catch{
+    alert("JSON 格式有錯。請檢查逗號、引號、括號是否完整。");
+  }
+});
 
-    playBtn.addEventListener("click", async () => {
-      try {
-        setError("");
-        await player.play();
-        playBtn.textContent = "播放中";
-      } catch (e) {
-        setError("如果沒有聲音：請確認音檔在 audio/ 資料夾，並且檔名完全一致（大小寫也要一樣）。");
-      }
-    });
-
-    reloadBtn.addEventListener("click", () => {
-      apply();
-    });
-  </script>
+resetCfgBtn.addEventListener("click", () => {
+  saveCfg(structuredClone(DEFAULT_CFG));
+  cfgBox.value = JSON.stringify(loadCfg(), null, 2);
+  apply();
+});
+</script>
 </body>
 </html>
