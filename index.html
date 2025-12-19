@@ -5,76 +5,255 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>給妳的歌</title>
   <style>
-    body{font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif;margin:0;padding:24px;background:#fafafa;line-height:1.6}
-    .card{max-width:520px;margin:40px auto;background:#fff;border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-    h1{margin:0 0 8px;font-size:22px}
-    p{margin:10px 0;color:#333}
-    button{width:100%;padding:14px 16px;border:0;border-radius:12px;font-size:16px;background:#111;color:#fff;cursor:pointer;margin-top:12px}
-    .hint{margin-top:10px;color:#777;font-size:13px;text-align:center}
-    .err{margin-top:10px;color:#b00020;font-size:13px}
-    audio{width:100%;margin-top:12px}
+    :root{
+      --bg1:#fff7fb;
+      --bg2:#f2fbff;
+      --card:#ffffffcc;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --accent:#ff5fa2;
+      --accent2:#6aa7ff;
+      --shadow: 0 18px 50px rgba(0,0,0,.12);
+      --radius: 22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans TC", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, var(--bg1), transparent 60%),
+        radial-gradient(1200px 700px at 85% 20%, var(--bg2), transparent 60%),
+        linear-gradient(180deg, #fff, #f7fafc);
+    }
+    .wrap{width:min(560px, 100%)}
+    .card{
+      position:relative;
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid rgba(255,255,255,.6);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-60px -40px auto auto;
+      width:220px; height:220px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,95,162,.35), transparent 60%),
+                  radial-gradient(circle at 70% 70%, rgba(106,167,255,.30), transparent 60%);
+      transform: rotate(18deg);
+      filter: blur(0px);
+      pointer-events:none;
+    }
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+    h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.5px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12.5px;
+      color:#111827;
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(17,24,39,.08);
+      white-space:nowrap;
+    }
+    .dot{
+      width:9px; height:9px; border-radius:999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 4px rgba(255,95,162,.12);
+    }
+    .msg{
+      margin:10px 0 14px;
+      font-size:15.5px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .panel{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    button{
+      flex:1 1 180px;
+      padding:13px 14px;
+      border:0;
+      border-radius:16px;
+      cursor:pointer;
+      font-size:15px;
+      font-weight:650;
+      color:white;
+      background: linear-gradient(135deg, var(--accent), #ff7cc1 45%, #ffb4d8);
+      box-shadow: 0 10px 25px rgba(255,95,162,.28);
+      transition: transform .08s ease, filter .12s ease;
+    }
+    button:hover{filter:brightness(1.02)}
+    button:active{transform: translateY(1px)}
+    .ghost{
+      flex:0 0 auto;
+      padding:13px 14px;
+      border-radius:16px;
+      background: rgba(255,255,255,.7);
+      color:#111827;
+      border:1px solid rgba(17,24,39,.10);
+      box-shadow:none;
+      font-weight:650;
+    }
+    .hint{
+      font-size:13px;
+      color:var(--muted);
+      text-align:center;
+      padding-top:6px;
+    }
+    .err{
+      display:none;
+      margin-top:4px;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,95,162,.10);
+      border:1px solid rgba(255,95,162,.18);
+      color:#b42318;
+      font-size:13px;
+    }
+    audio{
+      width:100%;
+      margin-top:2px;
+      border-radius:14px;
+    }
+    .tiny{
+      margin-top:10px;
+      text-align:center;
+      color:#9ca3af;
+      font-size:12px;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>給妳的歌</h1>
-    <p id="msg">準備中…</p>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <h1>給妳的歌</h1>
+          <div class="msg" id="msg">準備中…</div>
+        </div>
+        <div class="badge" title="會依時間切換">
+          <span class="dot"></span>
+          <span id="slot">載入中</span>
+        </div>
+      </div>
 
-    <button id="playBtn">點我播放</button>
-    <div class="hint">不同時間掃描，會聽到不一樣的我。</div>
-    <div class="err" id="err"></div>
+      <div class="panel">
+        <div class="controls">
+          <button id="playBtn">播放</button>
+          <button class="ghost" id="reloadBtn" title="重新判斷時間並換歌">重新載入</button>
+        </div>
 
-    <audio id="player" controls preload="auto"></audio>
+        <div class="err" id="err"></div>
+        <audio id="player" controls preload="auto"></audio>
+
+        <div class="hint">不同時間掃描，會聽到不一樣的我。</div>
+        <div class="tiny">如果手機沒自動播放，點一下「播放」就可以。</div>
+      </div>
+    </div>
   </div>
 
-<script>
-  const now = new Date();
-  const hour = now.getHours();
+  <script>
+    function pickByTime(){
+      const now = new Date();
+      const hour = now.getHours();
 
-  // 依時間段切歌（你可改）
-  let file = "";
-  let text = "";
+      let slot = "";
+      let song = "";
+      let message = "";
 
-  if (hour >= 6 && hour < 11) {
-    file = "audio/day_song.mp3";
-    text = "今天慢慢來。";
-  } else if (hour >= 11 && hour < 18) {
-    file = "audio/day_song.mp3";
-    text = "上班很辛苦，有我陪你。";
-  } else if (hour >= 18 && hour < 23) {
-    file = "audio/day_song.mp3";
-    text = "辛苦了，今天就到這裡。";
-  } else {
-    file = "audio/day_song.mp3";
-    text = "如果你還醒著，我在。";
-  }
+      if (hour >= 6 && hour < 11) {
+        slot = "早上";
+        song = "audio/day_song.mp3";
+        message = "今天慢慢來。";
+      } else if (hour >= 11 && hour < 18) {
+        slot = "白天";
+        song = "audio/day_song.mp3";
+        message = "上班很辛苦，能上就上；無聊就吃吃喝喝。有我陪你。";
+      } else if (hour >= 18 && hour < 23) {
+        slot = "晚上";
+        song = "audio/day_song.mp3";
+        message = "辛苦了，今天就到這裡。";
+      } else {
+        slot = "深夜";
+        song = "audio/day_song.mp3";
+        message = "如果你還醒著，我在。";
+      }
 
-  const msgEl = document.getElementById("msg");
-  const errEl = document.getElementById("err");
-  const btn = document.getElementById("playBtn");
-  const player = document.getElementById("player");
-
-  msgEl.textContent = text;
-
-  // 讓你按下按鈕才播放（手機瀏覽器規則）
-  btn.addEventListener("click", async () => {
-    errEl.textContent = "";
-    player.src = file;
-
-    try {
-      await player.play();
-      btn.textContent = "播放中（可用下方控制列暫停/播放）";
-    } catch (e) {
-      errEl.textContent = "播放被瀏覽器擋住或音檔載入失敗。請確認音檔存在且檔名正確（.wav）。";
-      btn.textContent = "點我播放";
+      return {slot, song, message};
     }
-  });
 
-  // 若檔案找不到/格式不支援，會觸發
-  player.addEventListener("error", () => {
-    errEl.textContent = "音檔載入失敗：請確認 audio/ 內檔名與副檔名完全一致（例如 day_song.wav）。";
-    btn.textContent = "點我播放";
-  });
-</script>
+    const player = document.getElementById("player");
+    const playBtn = document.getElementById("playBtn");
+    const reloadBtn = document.getElementById("reloadBtn");
+    const msgEl = document.getElementById("msg");
+    const slotEl = document.getElementById("slot");
+    const errEl = document.getElementById("err");
+
+    function setError(text){
+      if (!text){
+        errEl.style.display = "none";
+        errEl.textContent = "";
+        return;
+      }
+      errEl.style.display = "block";
+      errEl.textContent = text;
+    }
+
+    function apply(){
+      const {slot, song, message} = pickByTime();
+      slotEl.textContent = slot;
+      msgEl.textContent = message;
+      player.src = song;
+
+      playBtn.textContent = "播放";
+      setError("");
+    }
+
+    // 初次載入
+    apply();
+
+    playBtn.addEventListener("click", async () => {
+      try {
+        setError("");
+        await player.play();
+        playBtn.textContent = "播放中";
+      } catch (e) {
+        setError("如果沒有聲音：請確認音檔在 audio/ 資料夾，並且檔名完全一致（大小寫也要一樣）。");
+      }
+    });
+
+    reloadBtn.addEventListener("click", () => {
+      apply();
+    });
+  </script>
 </body>
 </html>
