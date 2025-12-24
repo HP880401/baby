@@ -100,7 +100,6 @@
       filter: drop-shadow(0 22px 36px rgba(0,0,0,.42));
       transform: translate3d(0,0,0);
     }
-    .runner.flip{transform: scaleX(-1);}
     .runner.bob{animation: bob 1.15s ease-in-out infinite;}
     .paused .runner.bob{animation-play-state: paused;}
     @keyframes bob{
@@ -212,6 +211,7 @@
       color: var(--muted);
       font-size: 13.5px;
       min-height: 22px;
+      text-align:center;
     }
     .popline{display:inline-block; white-space:pre-wrap}
     .ch{
@@ -399,14 +399,12 @@
 
       <div class="controls">
         <div class="iconBtn" id="muteBtn" title="靜音/取消靜音">🔈</div>
-        
 
         <button class="playBtn" id="playBtn" title="播放/暫停">
           <div class="playTri"></div>
           <div class="pauseBars"><span></span><span></span></div>
         </button>
 
-        
         <div class="iconBtn" id="reloadBtn" title="重新判斷時間並載入">⟳</div>
       </div>
 
@@ -437,10 +435,10 @@
         captions: [
           { t: 10,  text: "早上的風 有一點涼" },
           { t: 15,  text: "窗外的光 慢慢亮" },
-          { t: 20, text: "不用太快 也不用趕" },
-          { t: 26, text: "今天的路 慢慢走完" },
-          { t: 31, text: "如果妳笑 那就很好" },
-          { t: 38, text: "我在這裡 陪妳起床" }
+          { t: 20,  text: "不用太快 也不用趕" },
+          { t: 26,  text: "今天的路 慢慢走完" },
+          { t: 31,  text: "如果妳笑 那就很好" },
+          { t: 38,  text: "我在這裡 陪妳起床" }
         ]
       },
       day: {
@@ -452,17 +450,17 @@
           { t: 10,  text: "上班很辛苦" },
           { t: 12,  text: "能撐就撐" },
           { t: 14,  text: "不想撐的時候 也沒關係" },
-          { t: 21, text: "事情做完 就先放著" },
-          { t: 25, text: "無聊的話 吃吃喝喝" },
-          { t: 31, text: "不用想太多 也不用急" },
-          { t: 38, text: "有我陪你 慢慢過去" }
+          { t: 21,  text: "事情做完 就先放著" },
+          { t: 25,  text: "無聊的話 吃吃喝喝" },
+          { t: 31,  text: "不用想太多 也不用急" },
+          { t: 38,  text: "有我陪你 慢慢過去" }
         ]
       },
       evening: {
         label: "晚上",
         title: "Good Job Today",
         message: "辛苦了，今天就到這裡。",
-        song: "audio/day_song.mp3",
+        song: "audio/night.mp3",
         captions: [
           { t: 0,  text: "今天做得很好" },
           { t: 7,  text: "把累放下來" },
@@ -495,8 +493,10 @@
     }
   };
 
-  /** ====== 2) 小工具 ====== */
+  /** ====== 2) 小工具（防呆） ====== */
   const $ = (id)=>document.getElementById(id);
+  const on = (el, ev, fn)=>{ if(el) el.addEventListener(ev, fn); };
+
   function pickSlotKey(){
     const h = new Date().getHours();
     if(h>=6 && h<11) return "morning";
@@ -520,7 +520,7 @@
   /** ====== 3) 背景粒子生成 ====== */
   const bg = $("bg");
   function spawnBackground(){
-    // 星光
+    if(!bg) return;
     for(let i=0;i<26;i++){
       const s=document.createElement("div");
       s.className="spark";
@@ -533,7 +533,6 @@
       s.style.height = size+"px";
       bg.appendChild(s);
     }
-    // 漂浮愛心（背景）
     for(let i=0;i<10;i++){
       const h=document.createElement("div");
       h.className="heart";
@@ -555,8 +554,6 @@
   const player = $("player");
   const playBtn = $("playBtn");
   const muteBtn = $("muteBtn");
-  const prevBtn = $("prevBtn");
-  const nextBtn = $("nextBtn");
   const reloadBtn = $("reloadBtn");
   const seek = $("seek");
   const fill = $("fill");
@@ -568,17 +565,22 @@
   const capsEl = $("caps");
   const capWrap = $("capWrap");
 
+  function showStatus(text){
+    if(!msgEl) return;
+    msgEl.innerHTML = `<span style="opacity:.9">${text}</span>`;
+  }
+
   let slotKey = pickSlotKey();
   let slot = CFG.slots[slotKey];
   let duration = 0;
   let isSeeking = false;
 
-  // 跳字動畫
   function animateText(el, text){
+    if(!el) return;
     el.innerHTML = "";
     const span=document.createElement("span");
     span.className="popline";
-    Array.from(text).forEach((c,i)=>{
+    Array.from(text || "").forEach((c,i)=>{
       const s=document.createElement("span");
       s.className="ch";
       s.style.animationDelay = (i*0.03)+"s";
@@ -588,8 +590,8 @@
     el.appendChild(span);
   }
 
-  // 字幕渲染
   function renderCaptions(captions){
+    if(!capsEl) return;
     capsEl.innerHTML = "";
     (captions||[]).forEach((c,i)=>{
       const div=document.createElement("div");
@@ -599,6 +601,7 @@
       capsEl.appendChild(div);
     });
   }
+
   function activeIndex(captions, t){
     let a=-1;
     for(let i=0;i<captions.length;i++){
@@ -613,38 +616,29 @@
     slotKey = key;
     slot = CFG.slots[slotKey];
 
-    songTitle.textContent = slot.title || "Sweet Moment";
+    if(songTitle) songTitle.textContent = slot.title || "Sweet Moment";
     animateText(msgEl, slot.message || "");
 
-    player.pause();
-    player.currentTime = 0;
-    player.src = slot.song || "";
-    wrap.classList.remove("isPlaying");
+    if(player){
+      player.pause();
+      player.currentTime = 0;
+      player.src = slot.song || "";
+      player.load(); // 重要：明確載入
+    }
+
+    if(wrap) wrap.classList.remove("isPlaying");
     document.body.classList.add("paused");
 
     renderCaptions(slot.captions || []);
-    timeTag.textContent = "00:00";
+    if(timeTag) timeTag.textContent = "00:00";
 
-    // 進度歸零
-    fill.style.width = "0%";
-    seek.value = "0";
-    tNow.textContent = "0:00";
-    tAll.textContent = "0:00";
+    if(fill) fill.style.width = "0%";
+    if(seek) seek.value = "0";
+    if(tNow) tNow.textContent = "0:00";
+    if(tAll) tAll.textContent = "0:00";
     duration = 0;
-  }
 
-  function keyOrder(){
-    return ["morning","day","evening","night"];
-  }
-  function prevKey(){
-    const arr=keyOrder();
-    const i=arr.indexOf(slotKey);
-    return arr[(i-1+arr.length)%arr.length];
-  }
-  function nextKey(){
-    const arr=keyOrder();
-    const i=arr.indexOf(slotKey);
-    return arr[(i+1)%arr.length];
+    showStatus(slot.message || "");
   }
 
   apply(slotKey);
@@ -653,9 +647,10 @@
   let audioCtx = null;
   let analyser = null;
   let data = null;
-  let beat = 0; // 0~1
+  let beat = 0;
 
   function ensureAnalyser(){
+    if(!player) return;
     if(audioCtx) return;
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const src = audioCtx.createMediaElementSource(player);
@@ -674,104 +669,112 @@
       const v = (data[i]-128)/128;
       sum += v*v;
     }
-    const rms = Math.sqrt(sum/data.length); // 0~1
-    // 平滑＋放大感
+    const rms = Math.sqrt(sum/data.length);
     beat = Math.min(1, beat*0.82 + rms*1.05);
   }
 
   async function togglePlay(){
+    if(!player) return;
     try{
       ensureAnalyser();
       if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
 
       if(player.paused){
         await player.play();
-        wrap.classList.add("isPlaying");
+        if(wrap) wrap.classList.add("isPlaying");
         document.body.classList.remove("paused");
       }else{
         player.pause();
-        wrap.classList.remove("isPlaying");
+        if(wrap) wrap.classList.remove("isPlaying");
         document.body.classList.add("paused");
       }
-    }catch{
-      // 常見：檔案不存在/路徑錯
-      alert("播放失敗：請確認音檔路徑正確（例如 audio/day_song.mp3）且檔名大小寫一致。");
+    }catch(err){
+      showStatus("播放失敗：請確認音檔路徑、檔名大小寫與伺服器是否可存取。");
+      console.error(err);
     }
   }
 
-  playBtn.addEventListener("click", togglePlay);
-  player.addEventListener("play", ()=>{
-    wrap.classList.add("isPlaying");
-    document.body.classList.remove("paused");
-  });
-  player.addEventListener("pause", ()=>{
-    wrap.classList.remove("isPlaying");
-    document.body.classList.add("paused");
-  });
+  on(playBtn, "click", togglePlay);
 
-  muteBtn.addEventListener("click", ()=>{
+  if(player){
+    player.addEventListener("play", ()=>{
+      if(wrap) wrap.classList.add("isPlaying");
+      document.body.classList.remove("paused");
+    });
+    player.addEventListener("pause", ()=>{
+      if(wrap) wrap.classList.remove("isPlaying");
+      document.body.classList.add("paused");
+    });
+
+    player.addEventListener("error", ()=>{
+      showStatus("音檔載入失敗：請檢查 audio/ 內是否真的有該 mp3，且檔名大小寫一致。");
+    });
+
+    player.addEventListener("loadedmetadata", ()=>{
+      duration = player.duration || 0;
+      if(tAll) tAll.textContent = fmt(duration);
+    });
+  }
+
+  on(muteBtn, "click", ()=>{
+    if(!player || !muteBtn) return;
     player.muted = !player.muted;
     muteBtn.textContent = player.muted ? "🔇" : "🔈";
   });
 
-  prevBtn.addEventListener("click", ()=>apply(prevKey()));
-  nextBtn.addEventListener("click", ()=>apply(nextKey()));
-  reloadBtn.addEventListener("click", ()=>apply(pickSlotKey()));
+  on(reloadBtn, "click", ()=>apply(pickSlotKey()));
 
   /** ====== 7) 進度條（可拖曳） ====== */
-  seek.addEventListener("pointerdown", ()=>{ isSeeking=true; });
-  seek.addEventListener("pointerup", ()=>{ isSeeking=false; });
-  seek.addEventListener("input", ()=>{
-    if(!duration) return;
-    const p = Number(seek.value)/1000;
-    fill.style.width = (p*100)+"%";
-    if(isSeeking){
-      const t = p*duration;
-      tNow.textContent = fmt(t);
-      timeTag.textContent = fmt2(t);
-    }
-  });
-  seek.addEventListener("change", ()=>{
-    if(!duration) return;
-    const p = Number(seek.value)/1000;
-    player.currentTime = p*duration;
-  });
+  if(seek){
+    seek.addEventListener("pointerdown", ()=>{ isSeeking=true; });
+    seek.addEventListener("pointerup", ()=>{ isSeeking=false; });
 
-  player.addEventListener("loadedmetadata", ()=>{
-    duration = player.duration || 0;
-    tAll.textContent = fmt(duration);
-  });
+    seek.addEventListener("input", ()=>{
+      if(!duration || !fill) return;
+      const p = Number(seek.value)/1000;
+      fill.style.width = (p*100)+"%";
+      if(isSeeking){
+        const t = p*duration;
+        if(tNow) tNow.textContent = fmt(t);
+        if(timeTag) timeTag.textContent = fmt2(t);
+      }
+    });
 
-  /** ====== 8) 字幕跟隨 + 角色靠近字幕（D） ====== */
+    seek.addEventListener("change", ()=>{
+      if(!duration || !player) return;
+      const p = Number(seek.value)/1000;
+      player.currentTime = p*duration;
+    });
+  }
+
+  /** ====== 8) 字幕更新（跟隨時間） ====== */
   let lastActive = -2;
 
   function updateCaptions(t){
     const caps = slot.captions || [];
-    if(!caps.length){
-      timeTag.textContent = fmt2(t);
-      return;
-    }
+    if(timeTag) timeTag.textContent = fmt2(t);
+
+    if(!caps.length || !capsEl) return;
+
     const a = activeIndex(caps, t);
     const nodes = capsEl.querySelectorAll(".capLine");
+
     nodes.forEach((n,i)=>{
       n.classList.toggle("active", i===a);
-      // 只顯示附近幾行（像播放器字幕）
       if(a === -1) n.style.display = (i < 4 ? "" : "none");
       else n.style.display = (Math.abs(i-a)<=2 ? "" : "none");
     });
-    timeTag.textContent = fmt2(t);
 
-    // 字幕換行 → 讓兩隻靠近字幕區、像指一下（D）
     if(a !== lastActive){
       lastActive = a;
       attractToCaptionArea();
     }
   }
 
-  /** ====== 9) 兩張圖亂跑（A/B/C/D） ====== */
-  const field = $("playfield");
+  /** ====== 9) 兩張圖亂跑（點擊噴愛心 + 字幕吸引） ====== */
   const r1 = $("r1");
   const r2 = $("r2");
+  const capArea = $("capWrap");
 
   function makeRunner(el, seed){
     return {
@@ -789,21 +792,24 @@
     };
   }
 
-  const R = [makeRunner(r1,1), makeRunner(r2,2)];
+  const R = [];
+  if(r1) R.push(makeRunner(r1,1));
+  if(r2) R.push(makeRunner(r2,2));
 
+  // 合併 flip 到 transform（避免被覆蓋）
   function setRunnerTransform(s){
-    // A：跟節奏跳（beat 影響 scale）
-    const pulse = 1 + (wrap.classList.contains("isPlaying") ? (beat*0.18) : 0);
-    const sc = s.baseScale * pulse;
+    if(!s.el) return;
 
-    // 方向翻轉（看起來在跑）
-    s.el.classList.toggle("flip", s.vx < 0);
+    const playing = wrap && wrap.classList.contains("isPlaying");
+    const pulse = playing ? (beat*0.18) : 0;
+    const sc = s.baseScale * (1 + pulse);
 
-    s.el.style.transform = `translate3d(${s.x}px, ${s.y}px, 0) scale(${sc})`;
+    const dir = (s.vx < 0) ? -1 : 1; // 左右翻轉
+    s.el.style.transform = `translate3d(${s.x}px, ${s.y}px, 0) scale(${dir*sc}, ${sc})`;
   }
 
-  // C：點擊噴愛心 + 抖一下
   function burstHearts(x, y){
+    if(!bg) return;
     const n = 10 + Math.floor(Math.random()*10);
     for(let i=0;i<n;i++){
       const h = document.createElement("div");
@@ -816,38 +822,25 @@
       h.style.animationDuration = dur+"s";
       h.style.animationDelay = "0s";
       h.style.opacity = 0.75;
-
-      // 改成「往上噴」的小粒子（用 floatUp 也可）
-      // 直接用 floatUp：從 top 開始往上會怪，因此把 bottom 改用 translate 方案
-      // 簡化：用 CSS floatUp（上升），起點以 top 方式顯示仍可接受
       bg.appendChild(h);
-
-      // 自動清掉
       setTimeout(()=>h.remove(), 2200);
     }
   }
 
   function shake(el){
+    if(!el) return;
     el.classList.remove("shake");
-    // 重新觸發
     void el.offsetWidth;
     el.classList.add("shake");
     setTimeout(()=>el.classList.remove("shake"), 280);
   }
 
-  r1.addEventListener("click", (e)=>{
-    shake(r1);
-    burstHearts(e.clientX, e.clientY);
-  });
-  r2.addEventListener("click", (e)=>{
-    shake(r2);
-    burstHearts(e.clientX, e.clientY);
-  });
+  if(r1) r1.addEventListener("click", (e)=>{ shake(r1); burstHearts(e.clientX, e.clientY); });
+  if(r2) r2.addEventListener("click", (e)=>{ shake(r2); burstHearts(e.clientX, e.clientY); });
 
-  // D：字幕變化時，短暫吸引到字幕區
   function attractToCaptionArea(){
-    const rect = capWrap.getBoundingClientRect();
-    // 目標點：字幕框中間偏上
+    if(!capArea) return;
+    const rect = capArea.getBoundingClientRect();
     const tx = rect.left + rect.width*0.35;
     const ty = rect.top  + rect.height*0.35;
 
@@ -858,37 +851,33 @@
       s.attractY = ty + (idx===0 ? -10 : 15);
     });
   }
-
-  // 初次也吸一次（讓它們懂字幕位置）
   setTimeout(attractToCaptionArea, 500);
 
+  /** ====== 10) 主循環（進度 + 字幕 + 跑動） ====== */
   function tick(now){
-    // A：節奏分析更新
     updateBeat();
 
-    // 進度/字幕更新
-    const t = player.currentTime || 0;
+    const t = player ? (player.currentTime || 0) : 0;
+
     if(duration > 0){
       const p = Math.min(1, t/duration);
-      if(!isSeeking){
+      if(!isSeeking && seek && fill){
         seek.value = String(Math.floor(p*1000));
         fill.style.width = (p*100)+"%";
-        tNow.textContent = fmt(t);
+        if(tNow) tNow.textContent = fmt(t);
       }
     }else{
-      tNow.textContent = fmt(t);
+      if(tNow) tNow.textContent = fmt(t);
     }
+
     updateCaptions(t);
 
-    // B：播放才跑，暫停就停（停止更新位置）
-    const playing = wrap.classList.contains("isPlaying");
-
+    const playing = wrap && wrap.classList.contains("isPlaying");
     const w = window.innerWidth;
     const h = window.innerHeight;
 
     R.forEach((s)=>{
-      if(playing){
-        // 偶爾隨機變速/轉向（更像亂跑）
+      if(playing && s.el){
         if(now - s.lastSwitch > s.switchEvery){
           s.vx += (Math.random()*1.2 - 0.6);
           s.vy += (Math.random()*1.0 - 0.5);
@@ -898,7 +887,6 @@
           s.switchEvery = 1200 + Math.random()*1800;
         }
 
-        // D：字幕吸引（短時間）
         if(now < s.attractUntil){
           const ax = s.attractX - s.x;
           const ay = s.attractY - s.y;
@@ -909,9 +897,10 @@
         s.x += s.vx;
         s.y += s.vy;
 
-        // 邊界碰撞反彈
-        const rectW = s.el.getBoundingClientRect().width;
-        const rectH = s.el.getBoundingClientRect().height;
+        const rect = s.el.getBoundingClientRect();
+        const rectW = rect.width;
+        const rectH = rect.height;
+
         const minX = 10, minY = 10;
         const maxX = w - rectW - 10;
         const maxY = h - rectH - 10;
@@ -929,5 +918,6 @@
   }
   requestAnimationFrame(tick);
 </script>
+
 </body>
 </html>
